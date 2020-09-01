@@ -1,9 +1,9 @@
-import 'package:FlutterGalleryApp/string_utils.dart';
+import '../string_util.dart';
 
 //emum - энумерованный объект, содержащий какие-либо значения
 enum loginType { email, phone }
 
-class User {
+class User with UserUtils {
   String email;
   String phone;
   String password;
@@ -23,7 +23,8 @@ class User {
       : _firstName = firstName,
         _lastName = lastName,
         this.phone = phone,
-        this.email = email {
+        this.email = email,
+        this.friends = friends {
     print('User is created.');
     _type = email != null ? loginType.email : loginType.phone;
   }
@@ -35,6 +36,14 @@ class User {
       throw Exception('phone and email is empty');
     // if (phone.isEmpty && email.isEmpty)
     //   throw Exception("phone or email name is empty");
+    if (phone == null || phone.isEmpty) {
+    } else {
+      phone = checkPhone(phone);
+    }
+    if (email == null || email.isEmpty) {
+    } else {
+      email = checkEmail(email);
+    }
 //Возвращаем приватный констуктор
 //Фэктори инстанс имеет одно пространство имен, при вызове юзера мы будем обращаться
 //не просто к конструктору, а будем вызывать эту же фектори и у нас может
@@ -44,8 +53,8 @@ class User {
     return User._(
       firstName: _getFirstName(name),
       lastName: _getLastName(name),
-      phone: checkPhone(phone),
-      email: checkEmail(email),
+      phone: phone,
+      email: email,
     );
   }
 
@@ -92,7 +101,7 @@ class User {
     phone = phone.replaceAll(RegExp("[^+\\d]"), "");
 
     if (phone == null || phone.isEmpty) {
-      throw Exception("Enter don't empty number.");
+      throw Exception("Enter don't empty phone.");
     } else if (!RegExp(pattern).hasMatch(phone)) {
       throw Exception(
           "Enter valid phone number starting with + and containing 11 digits.");
@@ -133,7 +142,7 @@ class User {
     return phone;
   }
 
-  String get name => "${"".capitalize(_firstName)} ${"".capitalize(_lastName)}";
+  String get name => "${capitalize(_firstName)} ${capitalize(_lastName)}";
 
   //Фишка языка - переопределение самих операторов языка.
   @override
@@ -161,8 +170,9 @@ class User {
   email: $email
   firstName: $_firstName
   lastName: $_lastName
-  friends: ${friends.toList()}
+  
   ''';
+  // friends: ${friends.toList()}
 
   @override
   String toString() {
@@ -170,7 +180,8 @@ class User {
   name: $name
   email: $email  
   phone: $phone
-  friends: ${friends.toList()}
+  
   ''';
+    // friends: ${friends.toList()}
   }
 }

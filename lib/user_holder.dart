@@ -49,27 +49,39 @@ class UserHolder {
     }
   }
 
-  User setFriends(String name, List<User> friends) {
-    User user = User.friends(name: name, friends: friends);
-
-    if (!users.containsKey(user.login)) {
-      // users.addAll({user.login: user}); можно прописать также так.
-      users[user.login] = user;
-      return user;
-    } else {
-      throw Exception('The user with this login already exist.');
-    }
+  void setFriends(String name, List<User> friends) {
+    users[name].friends = friends;
   }
 
-  // void registerUserByEmail(String name, String email) {
-  //   User user = User(name: name, email: email);
-  //   print(user.toString());
+  User findUserInFriends(String login, User usersFriend) {
+    for (var friend in users[login].friends) {
+      if (friend == usersFriend) return friend;
+    }
+    throw Exception("fried not found");
+  }
 
-  //   if (!users.containsKey(user.login)) {
-  //     // users.addAll({user.login: user}); можно прописать также так.
-  //     users[user.login] = user;
-  //   } else {
-  //     throw Exception('The user with this login already exist.');
-  //   }
-  // }
+  List<User> importUsers(List<String> users) {
+    String email;
+    String phone;
+    String fullName;
+    List<User> result = [];
+    users.forEach((element) {
+      var usersList = element.replaceAll('\n', '').trim().split(';');
+      if (usersList.length != 0) {
+        usersList.forEach((el) {
+          if (el != '') {
+            if (el.contains('@')) {
+              email = el.trim();
+            } else if (el.contains('+')) {
+              phone = el.trim();
+            } else {
+              fullName = el.trim();
+            }
+          }
+        });
+        result.add(User(name: fullName, phone: phone, email: email));
+      }
+    });
+    return result;
+  }
 }
