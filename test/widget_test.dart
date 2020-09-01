@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart'
     show expect, group, isA, setUp, tearDownAll, test, throwsA;
 
-import 'package:FlutterGalleryApp/models/user.dart';
-import 'package:FlutterGalleryApp/user_holder.dart';
+import '../lib/models/user.dart';
+import '../lib/user_holder.dart';
 
 void main() {
   UserHolder holder;
@@ -38,7 +38,6 @@ void main() {
   group('Test: getUserByLogin()', () {
     test('registerUserByPhone', () {
       User user = holder.registerUserByPhone("John Ray", "+9-733 524-0185");
-      print(user);
 
       expect(user.login, holder.getUserByLogin(user.login).login);
       expect(user.phone, holder.getUserByLogin(user.login).phone);

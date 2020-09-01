@@ -1,56 +1,35 @@
-import 'package:FlutterGalleryApp/models/user.dart';
+import 'models/user.dart';
 
 class UserHolder {
-  //Создаем, инициализируем пустую карту
   Map<String, User> users = {};
 
-  void registerUser(String name, String phone, String email) {
-    User user = User(name: name, phone: phone, email: email);
-    print(user.toString());
-
-    if (!users.containsKey(user.login)) {
-      // users.addAll({user.login: user}); можно прописать также так.
-      users[user.login] = user;
-    } else {
-      throw Exception('The user with this login already exist.');
-    }
+  registerUser(String fullName, String phone, String email) {
+    var user = User(name: fullName, email: email, phone: phone);
+    users[user.login] = user;
   }
 
-  User getUserByLogin(String userLogin) {
-    //Внешняя функция
-    if (users.containsKey(userLogin)) {
-      return users[userLogin];
-    } else {
-      throw Exception('The user can\'t exist.');
-    }
+  User getUserByLogin(String login) {
+    return users[login];
   }
 
-  User registerUserByPhone(String name, String phone) {
-    User user = User.phone(name: name, phone: phone);
-
-    if (!users.containsKey(user.login)) {
-      // users.addAll({user.login: user}); можно прописать также так.
-      users[user.login] = user;
-      return user;
-    } else {
-      throw Exception('The user with this login already exist.');
-    }
+  User registerUserByEmail(String fullName, String email) {
+    var user = User(name: fullName, email: email);
+    if (users.containsKey(user.login))
+      throw Exception("A user with this email already exists");
+    users[user.login] = user;
+    return user;
   }
 
-  User registerUserByEmail(String name, String email) {
-    User user = User.email(name: name, email: email);
-
-    if (!users.containsKey(user.login)) {
-      // users.addAll({user.login: user}); можно прописать также так.
-      users[user.login] = user;
-      return user;
-    } else {
-      throw Exception('The user with this login already exist.');
-    }
+  User registerUserByPhone(String fullName, String phone) {
+    var user = User(name: fullName, phone: phone);
+    if (users.containsKey(user.login))
+      throw Exception("A user with this phone already exists");
+    users[user.login] = user;
+    return user;
   }
 
-  void setFriends(String name, List<User> friends) {
-    users[name].friends = friends;
+  setFriends(String login, List<User> friend) {
+    users[login].addFriend(friend);
   }
 
   User findUserInFriends(String login, User usersFriend) {

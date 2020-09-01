@@ -1,187 +1,98 @@
 import '../string_util.dart';
 
-//emum - энумерованный объект, содержащий какие-либо значения
-enum loginType { email, phone }
+enum LoginType { email, phone }
 
 class User with UserUtils {
   String email;
   String phone;
-  String password;
-
-  String _lastName;
   String _firstName;
-  loginType _type;
-
-  List<User> friends = <User>[];
+  String _lastName;
+  String _password;
+  List<User> friends;
+  LoginType _type;
 
   User._(
       {String firstName,
       String lastName,
-      String phone,
       String email,
-      List<User> friends})
-      : _firstName = firstName,
-        _lastName = lastName,
-        this.phone = phone,
-        this.email = email,
-        this.friends = friends {
-    print('User is created.');
-    _type = email != null ? loginType.email : loginType.phone;
+      String phone,
+      String password}) {
+    _firstName = capitalize(firstName);
+    _lastName = capitalize(lastName);
+    this.email = email;
+    this.phone = phone;
+    this._password = password;
+    this.friends = [];
+    _type = email == null ? LoginType.phone : LoginType.email;
   }
 
-//В фектори создается инстанс и мы можем сделать логику до создания самого инстанса
-  factory User({String name, String phone, String email}) {
-    if (name.isEmpty) throw Exception("User name is empty");
-    if (phone?.isEmpty == true && email?.isEmpty == true)
-      throw Exception('phone and email is empty');
-    // if (phone.isEmpty && email.isEmpty)
-    //   throw Exception("phone or email name is empty");
-    if (phone == null || phone.isEmpty) {
-    } else {
-      phone = checkPhone(phone);
-    }
-    if (email == null || email.isEmpty) {
-    } else {
-      email = checkEmail(email);
-    }
-//Возвращаем приватный констуктор
-//Фэктори инстанс имеет одно пространство имен, при вызове юзера мы будем обращаться
-//не просто к конструктору, а будем вызывать эту же фектори и у нас может
-//произойти клоужер, когда один объект будет вызывать сам себя. Это не совсем корректно.
-//Как исправить? Создаем внутренний приватный конструктор, который не будет доступен извне.
-//User._(); - приватный конструктор без имени. Приватность это и есть имя.
+  factory User({String name, String phone, String email, String password}) {
+    if (name == null || name.isEmpty)
+      throw Exception('name should not be empty');
+    if ((phone == null || phone.isEmpty) && (email == null || email.isEmpty))
+      throw Exception('phone or email must be not empty');
     return User._(
-      firstName: _getFirstName(name),
-      lastName: _getLastName(name),
-      phone: phone,
-      email: email,
-    );
+        firstName: _getFirstName(name),
+        lastName: _getLastName(name),
+        email: email != null ? _checkEmail(email) : email,
+        phone: phone != null ? _checkPhone(phone) : phone,
+        password: password);
   }
 
-  factory User.phone({String name, String phone}) {
-    if (name.isEmpty) throw Exception("User name is empty");
-    if (phone?.isEmpty == true) throw Exception('phone is empty');
-
-    return User._(
-      firstName: _getFirstName(name),
-      lastName: _getLastName(name),
-      phone: checkPhone(phone),
-    );
-  }
-
-  factory User.email({String name, String email}) {
-    if (name.isEmpty) throw Exception("User name is empty");
-    if (email?.isEmpty == true) throw Exception('email is empty');
-
-    return User._(
-      firstName: _getFirstName(name),
-      lastName: _getLastName(name),
-      email: checkEmail(email),
-    );
-  }
-
-  factory User.friends({String name, List<User> friends}) {
-    if (name.isEmpty) throw Exception("User name is empty");
-    if (friends?.isEmpty == true) throw Exception('friends is empty');
-
-    return User._(
-      firstName: _getFirstName(name),
-      lastName: _getLastName(name),
-      friends: friends,
-    );
-  }
-
-  //Почему функция должна быть статической. поскольку инстанс юзера еще не создан,
-  //тем самым у нас нет доступа к данной функции.
-  static String _getLastName(String userName) => userName.split(" ")[1];
-  static String _getFirstName(String userName) => userName.split(" ")[0];
-
-  static String checkPhone(String phone) {
-    String pattern = r"^(?:[+0])?[0-9]{11}";
-    phone = phone.replaceAll(RegExp("[^+\\d]"), "");
-
-    if (phone == null || phone.isEmpty) {
-      throw Exception("Enter don't empty phone.");
-    } else if (!RegExp(pattern).hasMatch(phone)) {
-      throw Exception(
-          "Enter valid phone number starting with + and containing 11 digits.");
-    }
-    return phone;
-  }
-
-  static String checkEmail(String email) {
-    String pattern =
-        r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$";
-    // email = email.replaceAll(RegExp("[^+\\d]"), "");
-
-    if (email == null || email.isEmpty) {
-      throw Exception("checkEmail: Enter don't empty email.");
-    } else if (!RegExp(pattern).hasMatch(email)) {
-      throw Exception(
-          "Enter valid email number starting with + and containing 11 digits.");
-    }
+  static String _checkEmail(String email) {
+    if (!email.contains('@')) throw Exception("Email doesn't valid");
     return email;
   }
 
-  // String get login {
-  //   if (_type == loginType.phone) {
-  //     return phone;
-  //   } else {
-  //     return email;
-  //   }
-  // }
-  //Более компактный код
-  String get login {
-    if (_type == loginType.phone) return phone;
-    return email;
+  addFriend(List<User> users) => this.friends.addAll(users);
+
+  List<User> get getFriends => friends;
+  User addFriends(User u, List<User> friend) {
+    u.friends.addAll(friend);
+    return u;
   }
 
-  //Get User By Login
-  String get getUserByLogin {
-    if (_type == loginType.email) return email;
+  static String _getFirstName(fullName) => fullName.split(" ")[0];
+  static String _getLastName(fullName) => fullName.split(" ")[1];
+
+  String get firstName => _firstName;
+  String get lastName => _lastName;
+  String get name => '$_firstName $_lastName';
+  String get login => _type == LoginType.email ? email : phone;
+
+  static String _checkPhone(String phone) {
+    if (phone == null || phone.trim().isEmpty)
+      throw Exception("Enter don't empty phone number");
+    phone = phone.replaceAll(RegExp('[^+\\d]'), '');
+    if (phone.isEmpty) throw Exception("Enter don't empty phone number");
+    if (phone[0] != '+' || phone.length != 12)
+      throw Exception(
+          'Enter a valid phone number starting with a + and containing 11 digits');
     return phone;
   }
-
-  String get name => "${capitalize(_firstName)} ${capitalize(_lastName)}";
-
-  //Фишка языка - переопределение самих операторов языка.
-  @override
-  bool operator ==(Object object) {
-    if (object == null) {
-      return false;
-    }
-    if (object is User) {
-      return _firstName == object._firstName &&
-          _lastName == object._lastName &&
-          (phone == object.phone || email == object.email);
-    }
-  }
-
-  void addFriend(Iterable<User> newFriend) {
-    friends.addAll(newFriend);
-  }
-
-  void removeFriend(User user) {
-    friends.remove(user);
-  }
-
-  String get userInfo => '''
-  name: $name
-  email: $email
-  firstName: $_firstName
-  lastName: $_lastName
-  
-  ''';
-  // friends: ${friends.toList()}
 
   @override
   String toString() {
     return '''
-  name: $name
-  email: $email  
-  phone: $phone
-  
-  ''';
-    // friends: ${friends.toList()}
+      fistName: $_firstName
+      lastName: $_lastName
+      email: $email
+      phone: $phone
+    ''';
   }
+
+  @override
+  bool operator ==(Object obj) {
+    if (obj == null) return false;
+    if (obj is User) {
+      return (_firstName == obj._firstName) &&
+          (_lastName == obj._lastName) &&
+          (phone == obj.phone) &&
+          (email == obj.email);
+    }
+    return false;
+  }
+
+  @override
+  int get hashCode => this.hashCode;
 }
