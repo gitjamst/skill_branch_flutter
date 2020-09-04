@@ -1,4 +1,9 @@
-import 'app.dart';
-import 'package:flutter/material.dart' show runApp;
+import 'package:flutter/rendering.dart';
 
-void main() => runApp(MyApp());
+import 'app.dart';
+import 'package:flutter/material.dart';
+
+void main() {
+  debugRepaintRainbowEnabled = true;
+  runApp(MyApp());
+}
