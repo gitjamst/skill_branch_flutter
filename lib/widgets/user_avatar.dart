@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 
 class UserAvatar extends StatelessWidget {
   final String avatarLink;
-  const UserAvatar({
-    Key key,
-    this.avatarLink,
-  }) : super(key: key);
+
+  const UserAvatar({Key key, this.avatarLink}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
+    //Должна быть округленная аватарка
     return ClipRRect(
       borderRadius: BorderRadius.circular(50),
       child: CachedNetworkImage(

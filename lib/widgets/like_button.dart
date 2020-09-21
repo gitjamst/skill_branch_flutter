@@ -5,20 +5,21 @@ class LikeButton extends StatefulWidget {
   final int likeCount;
   final bool isLiked;
 
-  const LikeButton({Key key, this.likeCount, this.isLiked}) : super(key: key);
+  const LikeButton({this.likeCount, this.isLiked, Key key}) : super(key: key);
+
   @override
   _LikeButtonState createState() => _LikeButtonState();
 }
 
 class _LikeButtonState extends State<LikeButton> {
-  bool isLiked;
+  bool isLikeed;
   int likeCount;
 
   @override
   void initState() {
-    isLiked = widget.isLiked;
-    likeCount = widget.likeCount;
     super.initState();
+    isLikeed = widget.isLiked;
+    likeCount = widget.likeCount;
   }
 
   @override
@@ -27,8 +28,8 @@ class _LikeButtonState extends State<LikeButton> {
       behavior: HitTestBehavior.opaque,
       onTap: () {
         setState(() {
-          isLiked = !isLiked;
-          if (isLiked) {
+          isLikeed = !isLikeed;
+          if (isLikeed) {
             likeCount++;
           } else {
             likeCount--;
@@ -40,11 +41,11 @@ class _LikeButtonState extends State<LikeButton> {
           padding: EdgeInsets.all(8),
           child: Row(
             children: [
-              Icon(isLiked ? AppIcons.like_fill : AppIcons.like),
+              Icon(isLikeed ? AppIcons.like_fill : AppIcons.like),
               SizedBox(
                 width: 4.21,
               ),
-              Text('$likeCount'),
+              Text(likeCount.toString()),
             ],
           ),
         ),
