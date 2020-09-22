@@ -1,6 +1,5 @@
 import 'package:FlutterGalleryApp/screens/photo_screen.dart';
 
-import '../res/colors.dart';
 import '../res/res.dart';
 import '../widgets/like_button.dart';
 import '../widgets/photo.dart';
@@ -25,7 +24,7 @@ class _FeedState extends State<Feed> {
           itemBuilder: (BuildContext context, int index) {
             return Column(
               children: <Widget>[
-                _buildItem(),
+                Hero(tag: index, child: _buildItem(index)),
                 Divider(
                   thickness: 2,
                   color: AppColors.mercury,
@@ -36,7 +35,7 @@ class _FeedState extends State<Feed> {
     );
   }
 
-  Widget _buildItem() {
+  Widget _buildItem(int tag) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -47,12 +46,12 @@ class _FeedState extends State<Feed> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => FullScreenImage(
-                          photoLink: kFlutterDash,
-                          name: 'Kirill Andreyashenko',
-                          userName: 'kapparay',
-                          altDescription:
-                              'This one page with one scree and one description',
-                        )));
+                        name: "name",
+                        userName: "user name",
+                        userPhoto:
+                            'https://skill-branch.ru/img/speakers/Adechenko.jpg',
+                        photo: kFlutterDash,
+                        heroTag: tag.toString())));
           },
         ),
         _buildPhotometa(),
@@ -78,9 +77,7 @@ Widget _buildPhotometa() {
       children: [
         Row(
           children: <Widget>[
-            UserAvatar(
-                avatarLink:
-                    'https://skill-branch.ru/img/speakers/Adechenko.jpg'),
+            UserAvatar('https://skill-branch.ru/img/speakers/Adechenko.jpg'),
             SizedBox(width: 6),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,

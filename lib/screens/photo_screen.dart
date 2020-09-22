@@ -1,75 +1,131 @@
-import 'package:FlutterGalleryApp/screens/feed_screen.dart';
-import 'package:FlutterGalleryApp/widgets/photo.dart';
+// import 'package:FlutterGalleryApp/res/res.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../widgets/widgets.dart';
+import './feed_screen.dart';
 
-class FullScreenImage extends StatelessWidget {
+class FullScreenImage extends StatefulWidget {
+  FullScreenImage(
+      {String altDescription,
+      String photo,
+      String userName,
+      String name,
+      String heroTag,
+      String userPhoto,
+      Key key})
+      : this.photoLink = photo,
+        this.altDescription = altDescription,
+        this.userName = userName,
+        this.name = name,
+        this.heroTag = heroTag,
+        this.userPhoto = userPhoto,
+        super(key: key);
+
   final String photoLink;
   final String userName;
   final String name;
   final String altDescription;
+  final String heroTag;
+  final String userPhoto;
 
-  const FullScreenImage(
-      {Key key, this.photoLink, this.userName, this.name, this.altDescription})
-      : super(key: key);
+  @override
+  _FullScreenImageState createState() => _FullScreenImageState();
+}
+
+class _FullScreenImageState extends State<FullScreenImage>
+    with TickerProviderStateMixin {
+  AnimationController _controller;
+  Animation<double> __avatarOpacity;
+  Animation<double> __userNameOpacity;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+        duration: const Duration(milliseconds: 1500), vsync: this)
+      ..forward();
+    //_controller = Tween(begin: 0, end: 1.0).animate(_controller);
+
+    __avatarOpacity = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Interval(
+          0.0,
+          0.5,
+          curve: Curves.ease,
+        ),
+      ),
+    );
+
+    __userNameOpacity = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Interval(
+          0.5,
+          1.0,
+          curve: Curves.ease,
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Photo'),
-        leading: Builder(builder: (BuildContext context) {
-          return IconButton(
-              icon: Icon(CupertinoIcons.back),
-              tooltip: 'back',
-              onPressed: () {
-                Navigator.pop(context);
-              });
-        }),
-      ),
-      body: Column(
-        children: [
-          Photo(photoLink: kFlutterDash),
-          Text(this.name == null ? '' : this.name),
-          Text(this.userName == null ? '' : '@' + this.userName),
-          Text(
-            this.altDescription == null ? '' : this.altDescription,
-            maxLines: 3,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 15, right: 15),
-            child: GestureDetector(
-              child: Row(children: [
-                MyButton('Save', () => debugPrint("Save")),
-                MyButton('Visit', () => debugPrint("Visit")),
-              ], mainAxisAlignment: MainAxisAlignment.spaceBetween),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-}
-
-class MyButton extends StatelessWidget {
-  const MyButton(String text, Function onPress, {Key key})
-      : this.text = text,
-        this.onPress = onPress,
-        super(key: key);
-
-  final String text;
-  final Function onPress;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Container(
-        child: RaisedButton(
-          onPressed: this.onPress,
-          child: Text(this.text, style: TextStyle(fontSize: 15)),
-        ),
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(25)),
-      ),
-    );
+        body: Column(children: [
+      AppBar(
+          leading: Builder(builder: (BuildContext context) {
+            return IconButton(
+                // icon: Icon(Icons.chevron_left),
+                icon: Icon(CupertinoIcons.back),
+                tooltip: 'back',
+                onPressed: () {
+                  Navigator.pop(context);
+                });
+          }),
+          title: Text('Photo')),
+      Hero(tag: widget.heroTag, child: Photo(photoLink: kFlutterDash)),
+      AnimatedBuilder(
+          animation: _controller,
+          builder: (BuildContext context, Widget child) {
+            return Row(children: <Widget>[
+              Container(
+                  child: Opacity(
+                      opacity: __avatarOpacity.value,
+                      child: UserAvatar(widget.userPhoto))),
+              SizedBox(
+                width: 6,
+              ),
+              Container(
+                  child: Opacity(
+                      opacity: __userNameOpacity.value,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(widget.name == null ? '' : widget.name),
+                          Text(widget.userName == null
+                              ? ''
+                              : '@' + widget.userName),
+                          Text(widget.altDescription == null
+                              ? ''
+                              : widget.altDescription)
+                        ],
+                      )))
+            ]);
+          })
+    ]));
   }
 }

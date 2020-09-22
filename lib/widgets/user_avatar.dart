@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class UserAvatar extends StatelessWidget {
   final String avatarLink;
 
-  const UserAvatar({Key key, this.avatarLink}) : super(key: key);
+  const UserAvatar(this.avatarLink);
 
   @override
   Widget build(BuildContext context) {
